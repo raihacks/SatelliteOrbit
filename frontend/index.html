@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Satellite Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-shell">
+    <aside class="control-panel">
+      <h1>Satellite Tracker 3D</h1>
+      <p class="panel-subtitle">Track a satellite by NORAD ID in a real-time globe view.</p>
+
+      <label for="norad">NORAD ID</label>
+      <div class="input-row">
+        <input id="norad" placeholder="e.g. 25544" inputmode="numeric">
+        <button id="track-btn">Track</button>
+      </div>
+
+      <div id="status" class="status">Enter a NORAD ID and click Track.</div>
+
+      <dl class="telemetry">
+        <div>
+          <dt>Latitude</dt>
+          <dd id="latitude">—</dd>
+        </div>
+        <div>
+          <dt>Longitude</dt>
+          <dd id="longitude">—</dd>
+        </div>
+        <div>
+          <dt>Altitude</dt>
+          <dd id="altitude">—</dd>
+        </div>
+      </dl>
+    </aside>
+
+    <div class="viewer" id="viewer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
