@@ -8,20 +8,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div class="app-shell">
     <aside class="control-panel">
       <h1>Satellite Tracker 3D</h1>
 
-      <label for="norad">NORAD ID</label>
+      <label for="norad">NORAD IDs</label>
       <div class="input-row">
-        <input id="norad" placeholder="e.g. 25544" inputmode="numeric">
+        <input id="norad" placeholder="e.g. 25544, 20580, 18356" inputmode="numeric">
         <button id="track-btn">Track</button>
       </div>
 
-      <div id="status" class="status">Enter a NORAD ID and click Track.</div>
+      <div id="status" class="status">Enter NORAD IDs and click Track.</div>
+      <div id="sat-list" class="sat-list"></div>
 
       <dl class="telemetry">
+        <div>
+          <dt>NORAD</dt>
+          <dd id="selected-norad">—</dd>
+        </div>
         <div>
           <dt>Latitude</dt>
           <dd id="latitude">—</dd>
@@ -29,6 +33,7 @@
         <div>
           <dt>Longitude</dt>
           <dd id="longitude">—</dd>
+        </div>
         <div>
           <dt>Altitude</dt>
           <dd id="altitude">—</dd>

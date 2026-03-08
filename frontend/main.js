@@ -41,12 +41,12 @@ controls.maxDistance = 30;
 const earthTexture = new THREE.TextureLoader().load("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg");
 const earth = new THREE.Mesh(
   new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
-  new THREE.MeshBasicMaterial({ map: earthTexture }) // fully bright
+  new THREE.MeshBasicMaterial({ map: earthTexture }) 
 );
 earthSystem.add(earth);
 
 /* Satellite management */
-const satellites = []; // store multiple satellites
+const satellites = [];
 
 function createSatelliteMarker(color = 0xffffff) {
   const marker = new THREE.Mesh(
@@ -57,13 +57,12 @@ function createSatelliteMarker(color = 0xffffff) {
   earthSystem.add(marker);
 
 
-  return { marker, targetPosition: new THREE.Vector3(), groundTrack: [], norad: null, groundLine: null, orbitLine: null };
+  return { marker, targetPosition: new THREE.Vector3(), groundTrack: [], norad: null, groundLine: null};
 }
 
 /* Lat/Lon to 3D */
 function latLonToVector3(lat, lon, altitudeKm = 0) {
-  const altitudeScale = altitudeKm / 6371;
-  const radius = EARTH_RADIUS * (1 + altitudeScale * 0.15);
+  const radius = EARTH_RADIUS + (altitudeKm / 6371) * EARTH_RADIUS; // scale altitude proportionally
   const phi = (90 - lat) * Math.PI / 180;
   const theta = (lon + 180) * Math.PI / 180;
   return new THREE.Vector3(
@@ -110,19 +109,6 @@ async function updateSatellite(sat) {
     earthSystem.add(sat.groundLine);
 
     // Orbit line (inclination)
-    if (!sat.orbitLine) {
-      const orbitRadius = pos.length();
-      const points = [];
-      for (let i = 0; i <= 360; i++) {
-        const angle = THREE.MathUtils.degToRad(i);
-        points.push(new THREE.Vector3(orbitRadius * Math.cos(angle), 0, orbitRadius * Math.sin(angle)));
-      }
-      const geometryOrbit = new THREE.BufferGeometry().setFromPoints(points);
-      const materialOrbit = new THREE.LineBasicMaterial({ color: 0x44aaff });
-      sat.orbitLine = new THREE.LineLoop(geometryOrbit, materialOrbit);
-      sat.orbitLine.rotation.x = THREE.MathUtils.degToRad(Math.abs(data.latitude));
-      earthSystem.add(sat.orbitLine);
-    }
 
   } catch (err) {
     console.error(err);
