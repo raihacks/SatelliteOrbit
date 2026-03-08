@@ -1,27 +1,34 @@
 const mysql = require("mysql2");
 
 const {
-  DATABASE_URL,
   MYSQL_URL,
-  DB_HOST = "localhost",
-  DB_PORT = "3306",
-  DB_USER = "root",
-  DB_PASSWORD = "",
-  DB_NAME = "satellite_tracker",
-  DB_SSL = "false"
+  DATABASE_URL,
+  DB_HOST,
+  DB_PORT,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DB_SSL = "false",
+  MYSQLHOST,
+  MYSQLPORT,
+  MYSQLUSER,
+  MYSQLPASSWORD,
+  MYSQLDATABASE,
+  MYSQL_SSL
 } = process.env;
 
-const connectionUri = DATABASE_URL || MYSQL_URL;
-const useSsl = ["1", "true", "required"].includes(String(DB_SSL).toLowerCase());
+const connectionUri = MYSQL_URL || DATABASE_URL;
+const sslFlag = MYSQL_SSL || DB_SSL;
+const useSsl = ["1", "true", "required"].includes(String(sslFlag).toLowerCase());
 
 const db = connectionUri
   ? mysql.createPool(connectionUri)
   : mysql.createPool({
-      host: DB_HOST,
-      port: Number(DB_PORT),
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
+      host: DB_HOST || MYSQLHOST || "localhost",
+      port: Number(DB_PORT || MYSQLPORT || 3306),
+      user: DB_USER || MYSQLUSER || "root",
+      password: DB_PASSWORD || MYSQLPASSWORD || "",
+      database: DB_NAME || MYSQLDATABASE || "satellite_tracker",
       ssl: useSsl ? { rejectUnauthorized: true } : undefined,
       waitForConnections: true,
       connectionLimit: 10,
@@ -31,13 +38,13 @@ const db = connectionUri
 function checkConnection() {
   db.getConnection((err, connection) => {
     if (err) {
-      console.error("DB connection failed:", err.message);
+      console.error("DB connection failed:", err.message || err.code || "unknown error");
       return;
     }
 
-        connection.ping((pingErr) => {
+    connection.ping((pingErr) => {
       if (pingErr) {
-        console.error("DB ping failed:", pingErr.message);
+        console.error("DB ping failed:", pingErr.message || pingErr.code || "unknown error");
       } else {
         console.log("Database pool connected");
       }
