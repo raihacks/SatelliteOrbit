@@ -13,13 +13,12 @@ const EARTH_RADIUS = 4;
 const API_BASE =
   "https://satelliteorbit-production.up.railway.app/api/satellite";
 
-
-  const earthSystem = new THREE.Group();
-  scene.add(earthSystem);
-
 /* Scene */
 
 const scene = new THREE.Scene();
+
+  const earthSystem = new THREE.Group();
+  scene.add(earthSystem);
 
 const camera = new THREE.PerspectiveCamera(
   70,
