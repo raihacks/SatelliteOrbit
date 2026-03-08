@@ -24,11 +24,19 @@ async function getTleByNorad(noradId) {
 }
 
 function computeGeoPoint(satrec, time) {
-  const positionAndVelocity = satellite.propagate(satrec, time);}
 
-function computeGeoPoint(satrec, time) {
+  const positionAndVelocity = satellite.propagate(satrec, time);
+
+  if (!positionAndVelocity || !positionAndVelocity.position) {
+    return null;
+  }
+
   const gmst = satellite.gstime(time);
-  const geo = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+
+  const geo = satellite.eciToGeodetic(
+    positionAndVelocity.position,
+    gmst
+  );
 
   return {
     latitude: deg(geo.latitude),
