@@ -5,6 +5,8 @@ const mysql = require("mysql2/promise");
 dotenv.config();
 dotenv.config({ path: path.join(__dirname, ".env") });
 
+const db = mysql.createPool(process.env.MYSQL_URL);
+
 const {
   MYSQL_URL,
   DATABASE_URL,
