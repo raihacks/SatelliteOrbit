@@ -5,8 +5,6 @@ const mysql = require("mysql2/promise");
 dotenv.config();
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-const db = mysql.createPool(process.env.MYSQL_URL);
-
 const {
   MYSQL_URL,
   DATABASE_URL,
@@ -78,7 +76,7 @@ function buildPoolConfig() {
     port: Number(DB_PORT || MYSQLPORT || 44905),
     user: DB_USER || MYSQLUSER || "root",
     password: DB_PASSWORD || MYSQLPASSWORD || "zBkJtGXReVesgChFbwyaTmwcASEoSoHm",
-    database: DB_NAME || "railway",
+    database: DB_NAME || MYSQLDATABASE || "railway"",
     ssl: getSslConfig(),
     waitForConnections: true,
     connectionLimit: 10,
@@ -106,11 +104,11 @@ function createDisabledDatabaseClient() {
   };
 }
 
-//const db = poolConfig
-//  ? poolConfig.uri
-//    ? mysql.createPool(poolConfig.uri)
-//    : mysql.createPool(poolConfig)
-//  : createDisabledDatabaseClient();
+const db = poolConfig
+  ? poolConfig.uri
+   ? mysql.createPool(poolConfig.uri)
+    : mysql.createPool(poolConfig)
+  : createDisabledDatabaseClient();
 
 async function checkConnection() {
   if (!hasDatabaseConfig) {
