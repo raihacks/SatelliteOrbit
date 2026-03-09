@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 /* STATIC FRONTEND */
-app.use(express.static(path.join(__dirname, "..", "frontend")));
+//app.use(express.static(path.join(__dirname, "..", "frontend")));
 
 /* ROUTES */
 app.get("/", (req, res) => {
@@ -30,9 +30,9 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/satellites", satelliteRoute);
 
 /* SPA fallback */
-app.get(/^(?!\/api).*/, (_req, res) => {
+/*app.get(/^(?!\/api).*/, /*(_req, res) => {
   res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
-});
+});*/
 
 /* START SERVER */
 async function bootstrap() {
