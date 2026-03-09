@@ -1,11 +1,3 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-
-const satelliteRoute = require("./satelliteRoute");
-const { checkConnection, initializeDatabase } = require("./db");
-
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -31,14 +23,13 @@ async function bootstrap() {
   try {
     await checkConnection();
     await initializeDatabase();
-
-    app.listen(PORT, () => {
-      console.log(`Backend running on port ${PORT}`);
-    });
   } catch (error) {
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
+    console.warn("Starting without database connectivity:", error.message);
   }
+
+  app.listen(PORT, () => {
+    console.log(`Backend running on port ${PORT}`);
+  });
 }
 
 bootstrap();
