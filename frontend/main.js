@@ -96,7 +96,7 @@ function generateOrbitPoints(tle1, tle2) {
 
   const now = new Date();
 
-  for (let i = 0; i < 120; i += 2) {
+  for (let i = 0; i < 180; i += 2) {
 
     const futureTime = new Date(now.getTime() + i * 60000);
 
@@ -138,7 +138,8 @@ function drawOrbit(sat, tle1, tle2) {
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
   const material = new THREE.LineBasicMaterial({
-    color: 0x00ffff
+  color: 0x00ffff,
+  linewidth: 2
   });
 
   sat.orbitLine = new THREE.Line(geometry, material);
