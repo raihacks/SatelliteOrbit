@@ -1,15 +1,20 @@
-import { earthSystem } from "../core/scene.js";
-import { EARTH_RADIUS } from "./earthConstants.js";
+const EARTH_RADIUS = 4;
 
-const textureLoader = new THREE.TextureLoader();
+export function createEarth(group) {
 
-const earthTexture = textureLoader.load(
-  "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg"
-);
+  const loader = new THREE.TextureLoader();
 
-export const earth = new THREE.Mesh(
-  new THREE.SphereGeometry(EARTH_RADIUS,64,64),
-  new THREE.MeshPhongMaterial({ map: earthTexture })
-);
+  const texture = loader.load(
+    "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg"
+  );
 
-earthSystem.add(earth);
+  const earth = new THREE.Mesh(
+    new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
+    new THREE.MeshPhongMaterial({
+      map: texture,
+      shininess: 8
+    })
+  );
+
+  group.add(earth);
+}

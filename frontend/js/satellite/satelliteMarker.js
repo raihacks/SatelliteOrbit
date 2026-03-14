@@ -1,18 +1,16 @@
-export function createSatelliteMarker(){
+export function createSatelliteMarker(color = 0x7df4ff) {
 
- const marker = new THREE.Mesh(
-  new THREE.SphereGeometry(0.06,14,14),
-  new THREE.MeshBasicMaterial({color:0x7df4ff})
- );
+  const marker = new THREE.Mesh(
+    new THREE.SphereGeometry(0.06, 14, 14),
+    new THREE.MeshBasicMaterial({ color })
+  );
 
- return {
-   marker,
-   orbitLine:null,
-   groundLine:null,
-   altitudeLine:null,
-   satrec:null,
-   groundPoints:[],
-   targetPosition:new THREE.Vector3()
- };
+  marker.visible = false;
 
+  return {
+    marker,
+    targetPosition: new THREE.Vector3(),
+    norad: null,
+    latestData: null
+  };
 }

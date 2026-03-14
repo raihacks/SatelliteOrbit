@@ -1,4 +1,8 @@
-export const scene = new THREE.Scene();
+export function createScene() {
+  const scene = new THREE.Scene();
 
-export const earthSystem = new THREE.Group();
-scene.add(earthSystem);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+  scene.add(ambientLight);
+
+  return scene;
+}
