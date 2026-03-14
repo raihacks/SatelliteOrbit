@@ -28,9 +28,47 @@ createEarth(earthSystem);
 
 const satellites = new SatelliteManager(earthSystem);
 let selectedSatellite = null;
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const CAMERA_FOCUS_OFFSET = 2.6;
+
+function focusCameraOnSatellite(sat) {
+  if (!sat) {
+    return;
+  }
+
+  const markerPosition = sat.marker.position.clone();
+
+  if (!Number.isFinite(markerPosition.length()) || markerPosition.length() === 0) {
+    return;
+  }
+
+  const direction = markerPosition.clone().normalize();
+  const nextCameraPosition = markerPosition.clone().add(direction.multiplyScalar(CAMERA_FOCUS_OFFSET));
+
+  camera.position.copy(nextCameraPosition);
+  controls.target.copy(markerPosition);
+  controls.update();
+}
 
 function setStatus(message) {
   statusEl.textContent = message;
+}
+
+function selectSatellite(sat, statusMessage = null) {
+  if (!sat) {
+    return;
+  }
+
+  selectedSatellite = sat;
+  satellites.setSelectedNorad(sat.norad);
+
+  if (statusMessage) {
+    setStatus(statusMessage);
+  }
+
+  renderSatPills();
+  setTelemetry(selectedSatellite);
 }
 
 function setTelemetry(sat) {
@@ -65,11 +103,7 @@ function renderSatPills() {
 
     pill.textContent = sat.name ? `${sat.norad} · ${sat.name}` : `${sat.norad}`;
     pill.addEventListener("click", () => {
-      selectedSatellite = sat;
-      satellites.setSelectedNorad(sat.norad);
-      setStatus(`Tracking NORAD ${sat.norad}.`);
-      renderSatPills();
-      setTelemetry(selectedSatellite);
+      selectSatellite(sat, `Tracking NORAD ${sat.norad}.`);
     });
 
     satListEl.appendChild(pill);
@@ -96,10 +130,9 @@ async function handleTrackSatellite() {
 
   try {
     const sat = await satellites.addSatellite(norad);
-    selectedSatellite = sat;
-    satellites.setSelectedNorad(sat.norad);
-    setStatus(`Tracking NORAD ${norad}.`);
-    renderSatPills();
+    selectSatellite(sat, `Tracking NORAD ${norad}.`);
+    satellites.update();
+    focusCameraOnSatellite(sat);
   } catch (error) {
     setStatus(error.message || `Unable to load NORAD ${norad}.`);
   } finally {
@@ -117,8 +150,7 @@ async function handleLoadAllSatellites() {
     satellites.addSatellitesFromCatalog(catalog);
 
     if (!selectedSatellite && satellites.satellites.length > 0) {
-      selectedSatellite = satellites.satellites[0];
-      satellites.setSelectedNorad(selectedSatellite.norad);
+      selectSatellite(satellites.satellites[0]);
     }
 
     renderSatPills();
@@ -137,6 +169,31 @@ loadAllButton.addEventListener("click", handleLoadAllSatellites);
 noradInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     handleTrackSatellite();
+  }
+});
+
+renderer.renderer.domElement.addEventListener("click", (event) => {
+  const rect = renderer.renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+
+  const markers = satellites.satellites
+    .map((sat) => sat.marker)
+    .filter((marker) => marker.visible);
+
+  const intersections = raycaster.intersectObjects(markers, false);
+
+  if (!intersections.length) {
+    return;
+  }
+
+  const pickedNorad = intersections[0].object.userData?.norad;
+  const pickedSatellite = satellites.satellites.find((sat) => sat.norad === pickedNorad);
+
+  if (pickedSatellite) {
+    selectSatellite(pickedSatellite, `Selected NORAD ${pickedSatellite.norad} from map.`);
   }
 });
 
