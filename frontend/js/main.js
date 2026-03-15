@@ -29,9 +29,15 @@ createEarth(earthSystem);
 
 const satellites = new SatelliteManager(earthSystem);
 let selectedSatellite = null;
+let hoveredSatellite = null;
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 const CAMERA_FOCUS_OFFSET = 2.6;
+
+const hoverLabelEl = document.createElement("div");
+hoverLabelEl.className = "marker-hover-label";
+hoverLabelEl.hidden = true;
+document.body.appendChild(hoverLabelEl);
 
 function focusCameraOnSatellite(sat) {
   if (!sat) {
@@ -45,7 +51,9 @@ function focusCameraOnSatellite(sat) {
   }
 
   const direction = markerPosition.clone().normalize();
-  const nextCameraPosition = markerPosition.clone().add(direction.multiplyScalar(CAMERA_FOCUS_OFFSET));
+   const nextCameraPosition = markerPosition
+    .clone()
+    .add(direction.multiplyScalar(CAMERA_FOCUS_OFFSET));
 
   camera.position.copy(nextCameraPosition);
   controls.target.copy(markerPosition);
@@ -118,6 +126,41 @@ function renderSatPills() {
   }
 }
 
+function updatePointerFromEvent(event) {
+  const rect = renderer.renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function getPickedSatelliteFromEvent(event) {
+  updatePointerFromEvent(event);
+  raycaster.setFromCamera(pointer, camera);
+
+  const markers = satellites.satellites
+    .map((sat) => sat.marker)
+    .filter((marker) => marker.visible);
+
+  const intersections = raycaster.intersectObjects(markers, false);
+
+  if (!intersections.length) {
+    return null;
+  }
+
+  const pickedNorad = intersections[0].object.userData?.norad;
+  return satellites.satellites.find((sat) => sat.norad === pickedNorad) || null;
+}
+
+function showHoverLabel(event, text) {
+  hoverLabelEl.textContent = text;
+  hoverLabelEl.style.left = `${event.clientX + 12}px`;
+  hoverLabelEl.style.top = `${event.clientY + 12}px`;
+  hoverLabelEl.hidden = false;
+}
+
+function hideHoverLabel() {
+  hoverLabelEl.hidden = true;
+}
+
 async function handleTrackSatellite() {
   const norad = noradInput.value.trim();
 
@@ -175,29 +218,39 @@ noradInput.addEventListener("keydown", (event) => {
   }
 });
 
-renderer.renderer.domElement.addEventListener("click", (event) => {
-  const rect = renderer.renderer.domElement.getBoundingClientRect();
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+renderer.renderer.domElement.addEventListener("mousemove", (event) => {
+  const pickedSatellite = getPickedSatelliteFromEvent(event);
 
-  raycaster.setFromCamera(pointer, camera);
-
-  const markers = satellites.satellites
-    .map((sat) => sat.marker)
-    .filter((marker) => marker.visible);
-
-  const intersections = raycaster.intersectObjects(markers, false);
-
-  if (!intersections.length) {
+  if (!pickedSatellite) {
+    hoveredSatellite = null;
+    satellites.setHoveredNorad(null);
+    hideHoverLabel();
+    renderer.renderer.domElement.style.cursor = "default";
     return;
   }
 
-  const pickedNorad = intersections[0].object.userData?.norad;
-  const pickedSatellite = satellites.satellites.find((sat) => sat.norad === pickedNorad);
+  hoveredSatellite = pickedSatellite;
+  satellites.setHoveredNorad(pickedSatellite.norad);
+  const hoverText = pickedSatellite.name || `NORAD ${pickedSatellite.norad}`;
+  showHoverLabel(event, hoverText);
+  renderer.renderer.domElement.style.cursor = "pointer";
+});
 
-  if (pickedSatellite) {
-    selectSatellite(pickedSatellite, `Selected NORAD ${pickedSatellite.norad} from map.`);
+renderer.renderer.domElement.addEventListener("mouseleave", () => {
+  hoveredSatellite = null;
+  satellites.setHoveredNorad(null);
+  hideHoverLabel();
+  renderer.renderer.domElement.style.cursor = "default";
+});
+
+renderer.renderer.domElement.addEventListener("click", (event) => {
+  const pickedSatellite = getPickedSatelliteFromEvent(event);
+
+  if (!pickedSatellite) {
+    return;
   }
+
+  selectSatellite(pickedSatellite, `Selected NORAD ${pickedSatellite.norad} from map.`);
 });
 
 window.addEventListener("resize", () => {

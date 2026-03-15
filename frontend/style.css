@@ -229,3 +229,19 @@ button:disabled {
   color: var(--muted);
   font-size: 0.78rem;
 }
+
+.marker-hover-label {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(141, 242, 255, 0.45);
+  background: rgba(6, 12, 24, 0.9);
+  color: #e9f7ff;
+  font-size: 0.8rem;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

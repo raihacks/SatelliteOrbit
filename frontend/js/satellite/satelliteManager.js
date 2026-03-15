@@ -11,22 +11,44 @@ export class SatelliteManager {
     this.group = group;
     this.satellites = [];
     this.selectedNorad = null;
+    this.hoveredNorad = null;
   }
 
   setSelectedNorad(norad) {
     this.selectedNorad = norad;
 
     this.satellites.forEach((sat) => {
-      this.applySelectionStyle(sat);
+      this.applyMarkerStyle(sat);
       this.applyLineVisibility(sat);
     });
   }
 
-  applySelectionStyle(sat) {
-    const isSelected = sat.norad === this.selectedNorad;
+  setHoveredNorad(norad) {
+    this.hoveredNorad = norad;
 
-    sat.marker.material.color.setHex(isSelected ? sat.selectedColor : sat.defaultColor);
-    sat.marker.scale.setScalar(isSelected ? 1.6 : 1);
+    this.satellites.forEach((sat) => {
+      this.applyMarkerStyle(sat);
+    });
+  }
+
+  applyMarkerStyle(sat) {
+    const isSelected = sat.norad === this.selectedNorad;
+    const isHovered = sat.norad === this.hoveredNorad;
+
+    if (isSelected) {
+      sat.marker.material.color.setHex(sat.selectedColor);
+      sat.marker.scale.setScalar(1.6);
+      return;
+    }
+
+    if (isHovered) {
+      sat.marker.material.color.setHex(sat.hoverColor);
+      sat.marker.scale.setScalar(1.3);
+      return;
+    }
+
+    sat.marker.material.color.setHex(sat.defaultColor);
+    sat.marker.scale.setScalar(1);
   }
 
   applyLineVisibility(sat) {
@@ -54,7 +76,7 @@ export class SatelliteManager {
     sat.marker.userData.norad = noradText;
     sat.satrec = satellite.twoline2satrec(tle1, tle2);
 
-    this.applySelectionStyle(sat);
+    this.applyMarkerStyle(sat);
     this.group.add(sat.marker);
     this.satellites.push(sat);
 

@@ -1,5 +1,6 @@
 const DEFAULT_MARKER_COLOR = 0x7df4ff;
-const SELECTED_MARKER_COLOR = 0xfffff;
+const SELECTED_MARKER_COLOR = 0xffffff;
+const HOVER_MARKER_COLOR = 0xffd166;
 
 export function createSatelliteMarker(color = DEFAULT_MARKER_COLOR) {
   const marker = new THREE.Mesh(
@@ -13,13 +14,14 @@ export function createSatelliteMarker(color = DEFAULT_MARKER_COLOR) {
     marker,
     targetPosition: new THREE.Vector3(),
     norad: null,
+    name: null,
     latestData: null,
     orbitLine: null,
     altitudeLine: null,
     groundLine: null,
     groundTrackPoints: [],
-    groundTrackPoints: [],
     defaultColor: color,
-    selectedColor: SELECTED_MARKER_COLOR
+    selectedColor: SELECTED_MARKER_COLOR,
+    hoverColor: HOVER_MARKER_COLOR
   };
 }
