@@ -1,0 +1,21 @@
+{
+  "name": "satellite-orbit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Railway entrypoint for SatelliteOrbit monorepo",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.6",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.16.1",
+    "satellite.js": "^6.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

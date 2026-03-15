@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="api-base" content="/api/satellites">
+  <title>Satellite Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <aside class="control-panel">
+      <label for="norad">NORAD ID</label>
+      <div class="input-row">
+        <input id="norad" placeholder="e.g. 25544" inputmode="numeric">
+        <button id="track-btn">Track</button>
+      </div>
+      <label for="catalog-group" class="panel-subtitle">Catalog group</label>
+      <select id="catalog-group" class="catalog-select">
+        <option value="active">Active</option>
+        <option value="stations">Stations</option>
+        <option value="starlink">Starlink</option>
+        <option value="planet">Planet</option>
+        <option value="oneweb">OneWeb</option>
+        <option value="iridium">Iridium</option>
+        <option value="geo">GEO</option>
+        <option value="intelsat">Intelsat</option>
+      </select>
+      <button id="load-all-btn" class="secondary-btn" type="button">Load selected catalog</button>
+      <div id="status" class="status">Enter a NORAD ID to begin tracking.</div>
+      <div id="sat-list" class="sat-list"></div>
+    </aside>
+
+    <aside class="telemetry-panel">
+      <h2>Telemetry</h2>
+      <dl class="telemetry">
+        <div> 
+          <dt>NORAD</dt>
+          <dd id="selected-norad">—</dd>
+        </div>
+        <div>
+          <dt>Latitude</dt>
+          <dd id="latitude">—</dd>
+        </div>
+        <div>
+          <dt>Longitude</dt>
+          <dd id="longitude">—</dd>
+        </div>
+        <div>
+          <dt>Altitude</dt>
+          <dd id="altitude">—</dd>
+        </div>
+      </dl>
+    </aside>
+
+    <div class="viewer" id="viewer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/satellite.js/dist/satellite.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

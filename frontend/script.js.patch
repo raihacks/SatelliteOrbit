@@ -1,0 +1,62 @@
+import { getSatelliteType } from './satelliteColors.js';
+ 
+ 
+// ── STEP 2 ── When you build the satellites array (after fetching TLE data),
+//              annotate each entry with its type config.
+//
+//  BEFORE (typical pattern):
+//      const satData = tles.map(tle => ({ name: tle.name, satrec: ... }));
+//
+//  AFTER:
+ 
+const satData = tles.map(tle => {
+  const typeConfig = getSatelliteType(tle.name);
+  return {
+    name:   tle.name,
+    satrec: satellite.twoline2satrec(tle.line1, tle.line2),
+    color:  typeConfig.color,
+    size:   typeConfig.size,
+    shape:  typeConfig.shape,
+  };
+});
+ 
+ 
+// ── STEP 3 ── Pass color/size into your Globe.gl (or equivalent) call.
+//
+//  BEFORE (all satellites the same color):
+//      globe.pointColor(() => 'white')
+//           .pointRadius(0.4)
+//
+//  AFTER:
+ 
+globe
+  .pointColor(d => d.color)          // per-type color
+  .pointRadius(d => d.size)          // per-type size
+  .pointAltitude(d => d.size * 0.1); // subtle altitude variation (optional)
+ 
+ 
+// ── STEP 4 ── If you render orbit trails / paths, color them too:
+//
+//  BEFORE:
+//      globe.pathColor(() => 'rgba(255,255,255,0.3)')
+//
+//  AFTER:
+ 
+globe.pathColor(d => d.color + '55'); // same hue, 33 % opacity hex suffix
+ 
+ 
+// ── STEP 5 ── When a single satellite is tracked by NORAD ID, highlight it:
+//
+//  Add this helper after you resolve the tracked satellite:
+ 
+function highlightTracked(sat) {
+  const typeConfig = getSatelliteType(sat.name);
+  // Make every other dot dimmer; tracked one gets full brightness + larger
+  globe
+    .pointColor(d => d.name === sat.name ? typeConfig.color : typeConfig.color + '44')
+    .pointRadius(d => d.name === sat.name ? typeConfig.size * 2.5 : typeConfig.size);
+ 
+  // Update the telemetry panel accent color
+  document.documentElement.style.setProperty('--tracked-color', typeConfig.color);
+}
+ 
