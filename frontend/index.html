@@ -14,8 +14,20 @@
       <label for="norad">NORAD ID</label>
       <div class="input-row">
         <input id="norad" placeholder="e.g. 25544" inputmode="numeric">
-        <button id="track-btn">Track</button></div>
-         <button id="load-all-btn" class="secondary-btn" type="button">Load active catalog</button>
+        <button id="track-btn">Track</button>
+      </div>
+      <label for="catalog-group" class="panel-subtitle">Catalog group</label>
+      <select id="catalog-group" class="catalog-select">
+        <option value="active">Active</option>
+        <option value="stations">Stations</option>
+        <option value="starlink">Starlink</option>
+        <option value="planet">Planet</option>
+        <option value="oneweb">OneWeb</option>
+        <option value="iridium">Iridium</option>
+        <option value="geo">GEO</option>
+        <option value="intelsat">Intelsat</option>
+      </select>
+      <button id="load-all-btn" class="secondary-btn" type="button">Load selected catalog</button>
       <div id="status" class="status">Enter a NORAD ID to begin tracking.</div>
       <div id="sat-list" class="sat-list"></div>
     </aside>

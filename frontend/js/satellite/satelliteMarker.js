@@ -1,5 +1,5 @@
 const DEFAULT_MARKER_COLOR = 0x7df4ff;
-const SELECTED_MARKER_COLOR = 0x63ff79;
+const SELECTED_MARKER_COLOR = 0xfffff;
 
 export function createSatelliteMarker(color = DEFAULT_MARKER_COLOR) {
   const marker = new THREE.Mesh(

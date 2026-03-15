@@ -3,12 +3,13 @@ function parseNorad(value) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export async function fetchTLECatalog() {
-  const url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle";
+export async function fetchTLECatalog(group = "active") {
+  const normalizedGroup = String(group || "active").trim().toLowerCase();
+  const url = `https://celestrak.org/NORAD/elements/gp.php?GROUP=${encodeURIComponent(normalizedGroup)}&FORMAT=tle`;
   const res = await fetch(url);
 
   if (!res.ok) {
-    throw new Error("Failed to fetch active satellite catalog");
+    throw new Error(`Failed to fetch ${normalizedGroup} satellite catalog`);
   }
 
   const text = await res.text();
@@ -34,7 +35,7 @@ export async function fetchTLECatalog() {
   }
 
   if (!satellites.length) {
-    throw new Error("No active satellites were found in the catalog");
+    throw new Error(`No satellites were found for ${normalizedGroup}`);
   }
 
   return satellites;

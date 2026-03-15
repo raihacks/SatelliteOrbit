@@ -130,6 +130,21 @@ button {
   font-size: 0.9rem;
 }
 
+catalog-select {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid rgba(129, 165, 233, 0.42);
+  background: rgba(5, 10, 20, 0.9);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.panel-subtitle {
+  margin-top: 10px;
+}
+
 .sat-list {
   margin-top: 10px;
   display: flex;

@@ -3,8 +3,6 @@ import { fetchTLE } from "../api/fetchTLE.js";
 import { latLonToVector3 } from "../math/latLonToVector3.js";
 
 const ORBIT_SAMPLE_POINTS = 280;
-const ORBIT_SCALE_MULTIPLIER = 2.2;
-const ORBIT_POINT_MIN_RADIUS = 3.9;
 const MIN_GROUND_STEP = 0.02;
 const MAX_GROUND_POINTS = 600;
 
@@ -137,33 +135,7 @@ export class SatelliteManager {
 
     const orbitPeriodMinutes = (2 * Math.PI) / meanMotion;
     const orbitPeriodMs = orbitPeriodMinutes * 60 * 1000;
-    const currentPosVel = satellite.propagate(sat.satrec, startTime);
 
-    if (!currentPosVel.position || !currentPosVel.velocity) {
-      return;
-    }
-
-    const position = new THREE.Vector3(
-      currentPosVel.position.x,
-      currentPosVel.position.y,
-      currentPosVel.position.z
-    );
-    const velocity = new THREE.Vector3(
-      currentPosVel.velocity.x,
-      currentPosVel.velocity.y,
-      currentPosVel.velocity.z
-    );
-
-    const normal = position.clone().cross(velocity);
-
-    if (normal.lengthSq() === 0) {
-      return;
-    }
-
-    normal.normalize();
-
-    const majorAxis = position.clone().normalize();
-    const minorAxis = normal.clone().cross(majorAxis).normalize();
     const orbitPoints = [];
 
     for (let i = 0; i <= ORBIT_SAMPLE_POINTS; i += 1) {
@@ -177,19 +149,11 @@ export class SatelliteManager {
 
       const gmst = satellite.gstime(time);
       const geo = satellite.eciToGeodetic(posVel.position, gmst);
-      const radius = latLonToVector3(
+      const orbitPoint = latLonToVector3(
         satellite.degreesLat(geo.latitude),
         satellite.degreesLong(geo.longitude),
         geo.height
-      ).length();
-
-      const adjustedRadius = Math.max(radius * ORBIT_SCALE_MULTIPLIER, ORBIT_POINT_MIN_RADIUS);
-      const theta = progress * Math.PI * 2;
-      const orbitPoint = majorAxis
-        .clone()
-        .multiplyScalar(Math.cos(theta) * adjustedRadius)
-        .add(minorAxis.clone().multiplyScalar(Math.sin(theta) * adjustedRadius * 0.65));
-
+      );
       orbitPoints.push(orbitPoint);
     }
 

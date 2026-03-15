@@ -10,6 +10,7 @@ const noradInput = document.getElementById("norad");
 const trackButton = document.getElementById("track-btn");
 const loadAllButton = document.getElementById("load-all-btn");
 const statusEl = document.getElementById("status");
+const catalogGroupEl = document.getElementById("catalog-group");
 const satListEl = document.getElementById("sat-list");
 
 const selectedNoradEl = document.getElementById("selected-norad");
@@ -141,12 +142,14 @@ async function handleTrackSatellite() {
 }
 
 async function handleLoadAllSatellites() {
+  const catalogGroup = catalogGroupEl?.value || "active";
+
   loadAllButton.disabled = true;
   trackButton.disabled = true;
-  setStatus("Loading active satellites catalog... this may take a few seconds.");
+  setStatus(`Loading ${catalogGroup} satellites catalog... this may take a few seconds.`);
 
   try {
-    const catalog = await fetchTLECatalog();
+    const catalog = await fetchTLECatalog(catalogGroup);
     satellites.addSatellitesFromCatalog(catalog);
 
     if (!selectedSatellite && satellites.satellites.length > 0) {
@@ -155,9 +158,9 @@ async function handleLoadAllSatellites() {
 
     renderSatPills();
     setTelemetry(selectedSatellite);
-    setStatus(`Loaded ${catalog.length} active satellites.`);
+    setStatus(`Loaded ${catalog.length} satellites from ${catalogGroup}.`);
   } catch (error) {
-    setStatus(error.message || "Unable to load active satellite catalog.");
+    setStatus(error.message || `Unable to load ${catalogGroup} satellite catalog.`);
   } finally {
     loadAllButton.disabled = false;
     trackButton.disabled = false;
